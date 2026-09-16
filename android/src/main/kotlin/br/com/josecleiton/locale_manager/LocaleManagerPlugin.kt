@@ -1,9 +1,11 @@
 package br.com.josecleiton.locale_manager
 
 import android.app.Activity
+import android.app.LocaleManager
 import android.content.res.Configuration
 
 import android.os.Build
+import android.os.LocaleList
 import io.flutter.Log
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -93,6 +95,12 @@ class LocaleManagerPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   @Suppress("DEPRECATION")
   private fun setLocale(localeStr: String) {
     val activity = this.activity ?: return
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      activity.getSystemService(LocaleManager::class.java)
+        .setApplicationLocales(LocaleList.forLanguageTags(localeStr))
+      return
+    }
 
     val locale = Locale.forLanguageTag(localeStr)
 

@@ -105,13 +105,16 @@ public class LocaleManagerPlugin: NSObject, FlutterPlugin {
         let localeIdentifier = locale.replacingOccurrences(of: "_", with: "-")
         UserDefaults.standard.set([localeIdentifier], forKey: "AppleLanguages")
         UserDefaults.standard.synchronize()
-        
-        guard let _ = Bundle.fetchBundleByLang(for: localeIdentifier) else {
+
+        let languageCode = localeIdentifier.split(separator: "-").first.map(String.init) ?? localeIdentifier
+        let lprojLang = Bundle.fetchBundleByLang(for: localeIdentifier) != nil ? localeIdentifier : languageCode
+
+        guard let _ = Bundle.fetchBundleByLang(for: lprojLang) else {
                  print("Invalid locale code or localization bundle does not exist. Native will update after restarting the app for: \(localeIdentifier)")
                  return
              }
-             
-        Bundle.setLanguage(localeIdentifier)
+
+        Bundle.setLanguage(lprojLang)
         NotificationCenter.default.post(name: .languageChanged, object: nil)
     }
     
